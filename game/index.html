@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canyon Ridge Run — a flight game</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0a1622;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #eef4f8; }
+  #scene { position: fixed; inset: 0; }
+  #scene canvas { display: block; }
+  .hud { position: fixed; z-index: 5; pointer-events: none; text-shadow: 0 1px 3px rgba(0,0,0,.7); }
+  .panel { background: rgba(8, 20, 32, .62); border: 1px solid rgba(255,255,255,.25);
+    border-radius: 10px; padding: 10px 14px; backdrop-filter: blur(2px); }
+  #hud-left { top: 14px; left: 14px; display: flex; gap: 18px; }
+  #hud-left .reading { display: flex; flex-direction: column; }
+  #hud-left .label { font-size: 11px; letter-spacing: .14em; color: #9fc6e2; }
+  #hud-left .value { font-size: 26px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  #hud-right { top: 14px; right: 14px; text-align: right; display: flex; flex-direction: column; gap: 8px; }
+  #hud-right .row { display: flex; gap: 16px; justify-content: flex-end; }
+  #hud-right .label { font-size: 11px; letter-spacing: .14em; color: #9fc6e2; }
+  #hud-right .value { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .bar { width: 150px; height: 9px; background: rgba(255,255,255,.18); border-radius: 5px; overflow: hidden; }
+  .bar > div { height: 100%; background: #ffd23d; transition: width .15s linear; }
+  .bar > div.low { background: #ff5a4e; }
+  #hud-fuel-bar { background: #51e07a; }
+  #hud-fuel-bar.low { background: #ff5a4e; }
+  #hud-message { top: 84px; left: 50%; transform: translateX(-50%); font-size: 22px; font-weight: 700;
+    color: #ffd23d; text-align: center; }
+  #hud-bottom { bottom: 14px; left: 14px; display: flex; gap: 14px; align-items: flex-end; }
+  #instruments { background: rgba(8, 20, 32, .62); border: 1px solid rgba(255,255,255,.25); border-radius: 10px; }
+  #hud-controls { font-size: 12px; line-height: 1.5; color: #cfe3f0; }
+  #overlay { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center;
+    background: rgba(6, 14, 24, .45); }
+  #overlay.hidden { display: none; }
+  #overlay-card { text-align: center; max-width: 560px; padding: 34px 44px;
+    background: rgba(8, 20, 32, .82); border: 1px solid rgba(255, 210, 61, .55); border-radius: 16px; }
+  #overlay-title { margin: 0 0 12px; font-size: 40px; letter-spacing: .02em; color: #ffd23d; }
+  #overlay-body { font-size: 16px; line-height: 1.55; color: #eef4f8; }
+  #overlay-hint { margin-top: 18px; font-size: 13px; letter-spacing: .08em; color: #9fc6e2; }
+  #status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.min.js" } }
+</script>
+</head>
+<body>
+<div id="scene" aria-label="Canyon Ridge Run: fly the orange bush plane through eight glowing rings down the river canyon, then land on the north strip"></div>
+
+<div id="hud-left" class="hud panel">
+  <div class="reading"><span class="label">ALTITUDE</span><span class="value" id="hud-alt">0 ft</span></div>
+  <div class="reading"><span class="label">SPEED</span><span class="value" id="hud-spd">0 kt</span></div>
+  <div class="reading"><span class="label">HEADING</span><span class="value" id="hud-hdg">000°</span></div>
+</div>
+
+<div id="hud-right" class="hud">
+  <div class="panel row">
+    <div><div class="label">SCORE</div><div class="value" id="hud-score">0</div></div>
+    <div><div class="label">RINGS</div><div class="value" id="hud-rings">0/8</div></div>
+  </div>
+  <div class="panel">
+    <div class="label">THROTTLE <span class="value" id="hud-thr" style="font-size:15px">0%</span></div>
+    <div class="bar"><div id="hud-thr-bar" style="width:0%"></div></div>
+    <div class="label" style="margin-top:6px">FUEL <span class="value" id="hud-fuel" style="font-size:15px">100%</span></div>
+    <div class="bar"><div id="hud-fuel-bar" style="width:100%"></div></div>
+  </div>
+</div>
+
+<div id="hud-message" class="hud"></div>
+
+<div id="hud-bottom" class="hud">
+  <canvas id="instruments" width="180" height="150" aria-label="Attitude indicator and compass"></canvas>
+  <div id="hud-controls" class="panel">Arrows / WASD — pitch &amp; bank<br>Shift — throttle &nbsp;·&nbsp; Space — brake<br>Mouse — steer &nbsp;·&nbsp; R — fly again</div>
+</div>
+
+<div id="overlay">
+  <div id="overlay-card">
+    <h1 id="overlay-title">Canyon Ridge Run</h1>
+    <div id="overlay-body"></div>
+    <div id="overlay-hint"></div>
+  </div>
+</div>
+
+<p id="status" role="status" aria-live="polite"></p>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
